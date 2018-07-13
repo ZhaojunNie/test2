@@ -1,0 +1,320 @@
+%% This is a template for the software  development plan
+%% Change the text in () to fit your project
+
+
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb} 
+\usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{color}
+\usepackage[table]{xcolor}
+\usepackage[includefoot]{geometry}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[document]{ragged2e}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+\usepackage[parfill]{parskip}
+\usepackage{tabularx}
+\graphicspath{ {(path to the image directory)} }
+
+%% Center the tabularx 'X' columns
+%% To use table columns that expand the entire pagewidth,
+%% use tabularx with capital 'X' (left aligned)
+%% or 'C' (center aligned) columns.
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\setlength{\headheight}{98pt}
+
+\fancyhead{} %% clear out all headers
+\fancyhead[L]{
+  \begin{tabularx}{\textwidth}{|C|C|C|C|C|C|}
+  \cline{1-6}
+        {\multirow{8}{*}{
+            \includegraphics[width=.8\linewidth, height=20mm]{nalogo.png}
+        }}
+  & \multicolumn{4}{ l| } {\scriptsize Document Title:} & \multicolumn{1}{ l| }{Effective Date:} \\
+  & \multicolumn{4}{ c| }{\large Search Algo Design,} & \multicolumn{1}{ l| }{See Arena} \\
+  & \multicolumn{4}{ c| }{\large Hermes Cerebrovasualr Hemodynamic Simulator} & \\ \cline{2-6} 
+  & \multicolumn{4}{ l| }{\scriptsize Document Number:} & \multicolumn{1}{ l| }{\scriptsize Rev:} \\
+  & \multicolumn{4}{ c| }{DC-XXXX} & \multicolumn{1}{ c| }{A} \\ \cline{2-6}
+  & \multicolumn{2}{ l| }{\scriptsize Document Level:} & \multicolumn{2}{ l| }{\scriptsize Status:} & \\
+  & \multicolumn{2}{ c| }{4} & \multicolumn{2}{ c| }{Developement} & \multicolumn{1}{ c| }{Page \thepage \ of \pageref{LastPage}} \\ \cline{1-6}
+  \end{tabularx}
+}
+
+\fancyfoot{} \fancyfoot[L]{ \footnotesize{This document is
+    proprietary, privileged, and confidential. No part of this
+    document may be disclosed in any manner to a third party without
+    the prior written consent of Neural Analytics Corporate
+    Offices. \\
+}
+}
+
+\usepackage{cleveref}
+\crefname{algocf}{Algorithm}{Algorithms}
+\Crefname{algocf}{Algorithm}{Algorithms}
+\crefname{lstlisting}{Listing}{Listings}
+\Crefname{lstlisting}{Listing}{Listings}
+\crefname{figure}{Figure}{Figures}
+\Crefname{figure}{Figure}{Figures}
+\crefname{equation}{Equation}{Equations}
+\Crefname{equation}{Equation}{Equations}
+\crefname{section}{Section}{Sections}
+\Crefname{section}{Section}{Sections}
+\crefname{table}{Table}{Tables}
+\Crefname{table}{Table}{Tables}
+\Crefname{requirementCounter}{Requirement}{Requirements}
+\crefname{requirementCounter}{Requirement}{Requirements}
+
+\begin{document}
+
+{\huge \textbf{Search Algo Design \\* NeuralBot System}}
+\vspace*{\fill}
+\tableofcontents
+
+\newpage
+
+\setlength{\parskip}{1em}
+
+\raggedright
+\section{Introduction}
+  \subsection{Purpose of the Document}
+  The purpose of this document is to describe the detailed requirements
+  of the Hermes Cerebrovascular Hemodynamic Simulator which is used to 
+  simulate the Transcranial Doppler (TCD) signals of brain cerebrovascular model.
+
+  \subsection{Scope of the Document}
+  The scope of this design is limited to the development activities and
+  deliverable of Hermes. The activities described here do not extend
+  to other projects that may be developed simultaneously or by the
+  same people.
+
+\subsection{Definitions}
+
+  \textbf{TCD:} Transcranial Doppler ultrasound, used for measuring
+  blood flow velocity within the cerebral vasculature.
+
+  \textbf{Transtemporal Window:} Ultrasound signals are blocked or
+  attenuated by bone, specifically most of the skull.  Also known as
+  \emph{window} for short, this is the temporal region on (most)
+  subjects through which ultrasound signal can pass because the skull
+  thickness and or density is decreased.
+
+  \textbf{MCA:} Middle Cerebral Artery, the primary vessel of interest
+  for this project.
+
+  \textbf{User:} The primary user of the Hermes Cerebrovascular 
+  Hemodynamic Simulator in a research capacity. 
+
+  \textbf{Transducer/Probe:} The ultrasound sending and receiving
+  probe within the TCD.
+
+  \textbf{Search Algorithm:} The algorithmic component responsible for
+  optimal signal acquisition of the MCA signals.  This is accomplished
+  through real-time analysis of the TCD signal, decision making based
+  on the TCD signal analysis, and control of the Robotic and Lucid M1
+  subsystems.
+
+  \textbf{Neuralbot Search System (NSS):} The subject of this
+  documentation, encompassing the Search Algorithm employed in the
+  NeuralBot System.
+
+
+  \textbf{Accessory Control Unit (ACU):} Consisting of the NSS and a
+  tablet or cpu capable of hosting it.
+
+  \textbf{Advanced Message Queueing Protocol (AMQP):} Platform
+  agnostic message queue system to facilitate message passing between
+  different software applications, possibly residing on different
+  computers.
+
+  \textbf{Eye-Corner:} One of the Anatomical Features, defined to be
+  at the corner of the eye nearest the ear, where the bone structure
+  curvature is the most extreme.
+
+  \textbf{Reference Points:} The Cartesian coordinates of the
+  Anatomical Features with respect to the Robotic Subsystem reference
+  frame.
+  
+  \textbf{MCA:} Middle Cerebral Artery, the primary vessel of interest
+  for this project.
+  
+  \textbf{Circle of Wills(COW):} The circle of Wills is essentially the series of interconnected blood vessels that apply blood to the brain.
+
+  \textbf{NeuralBot:} The robotic system that used to scan the brain automatically.
+  
+  \textbf{CTA:} Computer Tomography Angiography,used for visualize vessels throughout the body.
+  
+\section{Project Overview}
+ \subsection{Product  Description}
+  he current AAR search algorithm is evaluated using the Cerebrovascular Flow Phantom with the actual NeuralBot robot system. The Algorithm evaluation becomes inefficiency due to time-consuming robotic scanning procedures. In order to improve the algorithm evaluation efficiency under different situations, The HCHS toolkit is developed to simulate ultrasound insonation with cerebrovascular. The simulated TCD signals can be calculate under different robotic positions. 
+  
+  The HCHS is designed to be an assistant platform to help the AAR to simulate and visualize the search algorithm results.
+  
+  The HCHS is intend to simulate varies vascular models under different health condition.
+ \subsection {Software Description}
+  The HCHS software provides the simulation of the TCD signals when it gets the robotic positions from AAR platform. 
+  
+  The HCHS software can be used as a server that updates the simulated signal to AAR once get the requirement from AAR.
+  
+  The AAR platform shall send the request message of the head model type to the HCHS to help the HCHS select the suitable model. HCHS will response the locations of the reference points(mid\_ear and eye) back to AAR to help to identify the search region.
+  
+  The AAR sends the message of robotic search positions to the HCHS. The HCHS shall calculate the probe insonation position in the head model and calculate the simulated TCD signals accordingly after getting the position messages from Apollo\_Algo. The simulated TCD signals can be transmitted back to AAR to display results. Figure 1 is the screenshot of the Apollo\_Algo window that is used to display the TCD data. Figure 2 is the screenshot of the 3D head model in which the human head, COW and ultrasound beam can be displayed to help users to track the search region. 
+
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3,keepaspectratio=true]{figs/apollo_algo.png}
+        % Hermes.png: 1805x666 px, 288dpi, 15.92x5.87 cm, bb=0 0 451 167
+        \caption{AAR platform to display the TCD signal}
+    \end{figure}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.3,keepaspectratio=true]{figs/hermes_display.png}
+        % Hermes.png: 1805x666 px, 288dpi, 15.92x5.87 cm, bb=0 0 451 167
+        \caption{3D display of the head model}
+    \end{figure}
+  
+  \subsection{Constrains}
+  This software shall only be used during the Apollo\_Algo algorithm developments. 
+
+\section{General System Requirements and Specifications}
+The HCHS software platform aims to develop a help tools to show the interaction between ultrsound beam on the Head Model. The whole development cycle include four stages.
+
+\begin{tabularx}{\textwidth}{|c|X|}
+  \hline
+  \textbf{PR\_Req OD} & \textbf{Description}\\ \hline
+  
+  HCHS\_00000 & HCHS shall include four development stages.each stage \\ \hline
+  HCHS\_00001 & HCHS shall provide the simulated TCD signal when probe at different location. The detailed requirement can be found in following section. This requirement shall be achieved in the software revision 1.\\ \hline
+  HCHS\_00002 & HCHS shall provide a CTA signal analysis toolbox to extract the cerebrovascular and skull model data from large CTA database. This requirement shall be achieved in the software revision 2. \\ \hline
+  HCHS\_00003 & HCHS shall provide a method to calculate the simulated TCD data from different pathological conditions.This requirements shall be achieved in the software revision 3.\\ \hline
+  HCHS\_00004 & HCHS shall be developed as scale system, that can bootstrap the Head Model and handle large data volume. This requirements shall be achieved in the software revision 4. \\ \hline
+ \end{tabularx} \par
+ 
+\section{HCHS Revision 00 requirement and specification}
+  \subsection{Framework description}
+  The HCHS is used to simulate the ultrasound insonation region. It intends to be used for evaluate the search algorithm development. The Hermes framework is described in Figure 3.
+    \begin{figure}
+    \centering
+    \includegraphics[scale=1,keepaspectratio=true]{figs/Hermes.png}
+ % Hermes.png: 1805x666 px, 288dpi, 15.92x5.87 cm, bb=0 0 451 167
+    \caption{The flow chart of the HCHS framework}
+    \end{figure}
+
+  \subsubsection{Framework Requirement}
+  The Requirement in this section covers the general requirements for the framework. The details requirements for each module will be described in the follow section.
+
+ \begin{tabularx}{\textwidth}{|c|X|}
+  \hline
+  \textbf{PR\_Req OD} & \textbf{Description}\\ \hline
+  
+  HCHS\_00001 & The HCHS shall provide a platform to calculate the simulated TCD data \\ \hline
+  
+  HCHS\_00002 & The HCHS shall provide the head model reference locations including
+  the mid-ear and eye to AAR platform\\ \hline
+  
+  HCHS\_00003 & The HCHS shall be able to calculate the insonation region accurately with the error smaller than \--- \\ \hline
+  
+  HCHS\_00004 & The HCHS shall provide a method to calculate the simulated TCD signal(Mmode and spectrogram) based on the robotics location under different clinical situation\\ \hline
+  
+  HCHS\_00005 & The HCHS shall update the simulated TCD signals faster than the robotic location update rate e.g. 30Hz\\ \hline
+  
+  HCHS\_00006 & The HCHS shall provide the reference locations back to AAR if it gets a request from AAR\\ \hline
+  
+  HCHS\_00007 & The HCHS shall provide a method to view the 3D model of the head model and ultrasound illumination location\\ \hline
+  
+  HCHS\_00008 & The HCHS shall provide a method to simulation the ultrasound attenuation over the skull\\ \hline
+  
+  HCHS\_00009 & The HCHS shall provide a method that the user can change the probe location manually and update the 3D display \\ \hline
+  
+ \end{tabularx}
+ \subsection{Simulator interface}
+  The Simulator interface is used to set up the simulation environment in AAR software platform. The simulator interface is to setup the communication between AAR and HCHS. In addition, the Simulator is also used to update the simulated TCD data. 
+  \subsubsection{Functional Requirement}
+  The detailed requirements for the simulator interface is covered in this section.
+\begin{tabularx}{\textwidth}{|c|X|}
+    \hline
+    \textbf{PR\_Req ID} &\textbf{Description} \\ \hline
+    \textbf{SI\_00001} & The simulator interface shall obtain robotic position information(x, y, rx, ry) \\ \hline
+    \textbf{SI\_00002} & The simulator interface shall receive the TCD simulated signal from Hermes \\ \hline
+    \textbf{SI\_00003} & The simulator interface shall broadcast TCD data at same sampling rate as the actual TCD\\ \hline
+    \textbf{SI\_00004} & The simulator interface shall request the reference locations from Hermes\\ \hline
+    \textbf{SI\_00005} & The simulator interface shall update the reference locations in Apollo\_Algo\\ \hline
+ \end{tabularx} \par
+  
+  \subsection{Communication protocol}
+  A TCP based communication protocol is implemented to create the communication between the AAR and Hermes simulator. The Hermes will work as a server, AAR will work as a client. The communication protocol is used to transmit the command and data between AAR and HCHS. The ZeroMQ is used to build the communication. 
+  
+  \subsubsection{Function Requirements}
+  The requirements in the section covers the function requirements for the communication protocol 
+
+  \begin{tabularx}{\textwidth}{|c|X|}
+    \hline
+    \color{black} \textbf{PR\_Req ID} &\textbf{Description} \\ \hline
+    \textbf{CP\_00001} & The communication protocol shall transmit the data faster than the robotic search speed which is 30Hz \\ \hline
+    \textbf{CP\_00002} & The communication protocol shall have the function to keep the data send and receive correctly  \\ \hline
+    \textbf{CP\_00003} & The communication protocol shall have the function to process the data missing situation \\ \hline
+ \end{tabularx} \par
+ 
+  \subsection{Head Model Initialization}
+  In the Hermes Head Model initialization module, the head model data is loaded and basic geometry data will be calculated.The user is able to choose the different Head Model from database.
+  
+  \subsubsection{Function Requirements}
+  \begin{tabularx}{\textwidth}{|c|X|}
+    \hline
+    \textbf{PR\_Req ID} &\textbf{Description} \\ \hline
+    \textbf{HMI\_00001} & The Initialization module shall include model selection function \\ \hline
+    \textbf{HMI\_00002} & The Initialization module shall load the lookup table of the simulated MMode and spectrogram data \\ \hline
+ \end{tabularx} \par
+  
+  \subsection{Probe Insonation Calcuation}
+  The probe insonation calcuation module is used to calculate the actual ultrasound beam position based on the robotics position information that send back from AAR platform.
+  \subsubsection{Function Requirements}
+    \begin{tabularx}{\textwidth}{|c|X|}
+    \hline
+    \textbf{PR\_Req ID} &\textbf{Description} \\ \hline
+    \textbf{PIC\_00001} & The Initialization module shall include model selection function \\ \hline
+    \textbf{PIC\_00002} & The Initialization module shall load the lookup table of the simulated MMode and spectrogram data \\ \hline
+ \end{tabularx} \par
+ 
+  \subsection{Mmode Simulation}
+  The MMode simulation module is used to calculate the MMode signal 
+  \subsubsection {Function Requirements}
+    \begin{tabularx}{\textwidth}{|c|X|}
+    \hline
+    \textbf{PR\_Req ID} &\textbf{Description} \\ \hline
+    \textbf{MS\_00001} & The MMode simulation module shall generate the realistic MMode data that close to real TCD signal \\ \hline
+    \textbf{MS\_00002} & The MMode simulation module shall has the threshold for the MMode data \\ \hline
+    \textbf{MS\_00003} & The MMode simulation module shall has the output of the mean velocity and standard diviation of the velocity along the scanning range \\ \hline
+ \end{tabularx} \par
+  
+  \subsection{Spectrogram simulation}
+   Description of this module
+  \subsection{3D Model Display}
+  The 3D Model display module helps user to view the Head Model. HEAD, COW, ultrasound BEAM, and insonation region will be displayed.
+  \subsubsection{Function Requirements}
+      \begin{tabularx}{\textwidth}{|c|X|}
+    \hline
+    \textbf{PR\_Req ID} &\textbf{Description} \\ \hline
+    \textbf{DIS\_00001} & The 3D display module shall be disabled by the user \\ \hline
+    \textbf{DIS\_00002} & The 3D display module shall show the 3D plots of Head, COW, Ultrasound beam and insonation region with different color.  \\ \hline
+    \textbf{DIS\_00003} & The 3D display module shall update the probe position in real-time\\ \hline
+ \end{tabularx} \par
+
+\section{Revision History}
+ \begin{tabularx}{\textwidth}{|c|c|c|X|}
+  \hline
+  \rowcolor{lightgray} \textbf{Version \#} & \textbf{Supersedes Date} & \textbf{Author} & \textbf{Revision Summary} \\ \hline
+  01 & See Arena & Zhaojun Nie & ECO-XXXX: Draft \\ \hline
+ \end{tabularx}
+
+\end{document}
+
+
